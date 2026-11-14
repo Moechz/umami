@@ -1,0 +1,63 @@
+# ===========================================================================
+# Umami for TerraMaster TOS 7 (multi-container Docker application)
+# ===========================================================================
+# App image : moechz/umami:postgresql-v2.15.1 (Docker Hub mirror of the upstream
+#             ghcr.io/umami-software/umami image, pushed by the maintainer)
+# Database  : postgres:16-alpine (internal only)
+#
+# Only the app publishes a host port; APP_SECRET is generated on first start by
+# the wrapper and stored on the persistent data volume.
+
+services:
+  umamidocker:
+    image: moechz/umami:postgresql-v2.15.1
+    container_name: umamidocker
+    restart: unless-stopped
+    user: "1000:1000"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        @@ENTRYPOINT_SH@@
+    depends_on:
+      umamidocker-db:
+        condition: service_healthy
+    ports:
+      - "8152:3000"
+    environment:
+      TZ: "Asia/Shanghai"
+      DATABASE_TYPE: "postgresql"
+      DATABASE_URL: "postgresql://umami:umami@umamidocker-db:5432/umami"
+    volumes:
+      - /Volume1/DockerAppData/umamidocker/data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  umamidocker-db:
+    image: postgres:16-alpine
+    container_name: umamidocker-db
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      TZ: "Asia/Shanghai"
+      POSTGRES_USER: "umami"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_DB: "umami"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - /Volume1/DockerAppData/umamidocker/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+# TOS App Center web metadata (must be the last block of the file):
+x-app-meta:
+  web:
+    port: 8152
+    protocol: http

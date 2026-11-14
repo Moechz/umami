@@ -1,0 +1,102 @@
+{
+  "app_id": "umamidocker",
+  "title": "Umami",
+  "image": "moechz/umami:postgresql-v2.15.1",
+  "repo_name": "umami",
+  "mode": "wrapper",
+  "container_port": 3000,
+  "category": [
+    "Web_Services"
+  ],
+  "volumes": [
+    {
+      "host": "/Volume1/DockerAppData/umamidocker/data",
+      "container": "/data"
+    },
+    {
+      "host": "/Volume1/DockerAppData/umamidocker/db",
+      "container": "/var/lib/postgresql/data"
+    }
+  ],
+  "env": {
+    "TZ": "Asia/Shanghai",
+    "DATABASE_TYPE": "postgresql",
+    "DATABASE_URL": "postgresql://umami:umami@umamidocker-db:5432/umami"
+  },
+  "auth": "Umami Software",
+  "upstream_url": "https://github.com/umami-software/umami",
+  "upstream_license": "MIT",
+  "descript": "Umami is a privacy-friendly web analytics platform: track page views and events without cookies, with dashboards, funnels, retention and a simple script tag. This package runs the upstream image (mirrored to Docker Hub by the maintainer) with its own PostgreSQL database as non-root containers. Only the x86_64 package is built because the mirrored image is amd64.",
+  "release_note": "1. First release.",
+  "important": "Open the web UI on port 8152 and log in with the default admin/umami, then change the password and add your website to get the tracking script. The stack contains two containers (app, PostgreSQL); the APP_SECRET is generated on first start. Data lives under /Volume1/DockerAppData/umamidocker/. Needs DockerEngine; configure a registry mirror if Docker Hub is unreachable. Back up the data folder before uninstalling with data removal. Plain HTTP on the LAN.",
+  "probe": {
+    "user_in_image": "nobody",
+    "entrypoint": null,
+    "cmd": [
+      "sh",
+      "start.sh",
+      "prd"
+    ],
+    "exposed_ports": [
+      8080
+    ],
+    "declared_volumes": [],
+    "image_healthcheck": [
+      "CMD-SHELL",
+      "python healthcheck.py"
+    ],
+    "digest": "daya0576/beaverhabits@sha256:6cd7e464207369785c88cfd59f99c6cc44ec57f3a8d90c3439908da42271d69f",
+    "architecture": "x86_64",
+    "platforms": [],
+    "http_client_in_image": "",
+    "trial_run": {
+      "ok": false,
+      "http_code": "",
+      "state": "exited",
+      "paths": [],
+      "host_port": 18000,
+      "log_tail": "21, in connect\n    await_only(connection),\n    ~~~~~~~~~~^^^^^^^^^^^^\n  File \"/opt/pysetup/.venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py\", line 132, in await_only\n    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/opt/pysetup/.venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py\", line 196, in greenlet_spawn\n    value = await result\n            ^^^^^^^^^^^^\n  File \"/opt/pysetup/.venv/lib/python3.14/site-packages/aiosqlite/core.py\", line 168, in _connect\n    self._connection = await future\n                       ^^^^^^^^^^^^\n  File \"/opt/pysetup/.venv/lib/python3.14/site-packages/aiosqlite/core.py\", line 63, in _connection_worker_thread\n    result = function()\n  File \"/opt/pysetup/.venv/lib/python3.14/site-packages/aiosqlite/core.py\", line 466, in connector\n    return sqlite3.connect(loc, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\nsqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unable to open database file\n(Background on this error at: https://sqlalche.me/e/20/e3q8)\n\n[2026-11-10 04:59:36 +0000] [11] [ERROR] Application startup failed. Exiting.\n[2026-11-10 04:59:36 +0000] [11] [INFO] Worker exiting (pid: 11)\n[2026-11-10 04:59:36 +0000] [9] [ERROR] Worker (pid:11) exited with code 3.\n[2026-11-10 04:59:36 +0000] [9] [ERROR] Shutting down: Master\n[2026-11-10 04:59:36 +0000] [9] [ERROR] Reason: Worker failed to boot.",
+      "files_in_mounts": ""
+    },
+    "docker_hub": {},
+    "github": {
+      "owner": "daya0576",
+      "repo": "beaverhabits",
+      "description": "A self-hosted habit tracking app without \"Goals\"",
+      "license": "BSD-3-Clause",
+      "homepage": "https://beaverhabits.com/demo"
+    }
+  },
+  "healthcheck": [
+    "CMD-SHELL",
+    "wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1"
+  ],
+  "entrypoint_file": "specs/umami-entrypoint.sh",
+  "platform": "x86_64",
+  "user": "1000:1000",
+  "publisher": "Moechz",
+  "compose_project": "umamidocker",
+  "github_repo": "umami",
+  "upstream_version": "2.15.1",
+  "release_tag_prefix": "v",
+  "version": "2.15.1-1",
+  "help": "https://github.com/Moechz/umami/issues",
+  "official": "https://github.com/umami-software/umami",
+  "license": "MIT",
+  "docker_socket": false,
+  "group_add": [],
+  "platforms": [
+    "x86_64"
+  ],
+  "translations": {
+    "zh-cn": {
+      "descript": "习惯打卡与连续天数统计，界面简洁。",
+      "important": "首次使用请打开网页完成初始化。数据保存在 DockerAppData/beaverhabitsdocker，重启和升级不会丢失。容器以 uid 1000 运行，挂载目录需对该用户可读。需要 DockerEngine；Docker Hub 不可达时先配置镜像加速。卸载并删除数据前请备份。局域网内为 HTTP。"
+    },
+    "zh-hk": {
+      "descript": "习惯打卡与连续天数统计，界面简洁。",
+      "important": "首次使用請開啟網頁完成初始化。資料保存在 DockerAppData/beaverhabitsdocker，重新啟動和升級不會遺失。容器以 uid 1000 運行，掛載目錄需對該使用者可讀。需要 DockerEngine；Docker Hub 不可達時先設定鏡像加速。解除安裝並刪除資料前請備份。區域網路內為 HTTP。"
+    }
+  },
+  "host_port": 8152
+}
